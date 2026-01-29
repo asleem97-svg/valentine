@@ -58,23 +58,18 @@ button {
   inset: 0;
   background-size: cover;
   background-position: center;
-  animation: fadeIn 2s ease;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   text-align: center;
   color: white;
   text-shadow: 0 0 10px black;
+  transition: opacity 1s ease;
 }
 
 .yes-page h1 {
   font-size: 2.3rem;
   margin-bottom: 20px;
-}
-
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
 }
 
 /* floating hearts */
@@ -115,6 +110,7 @@ const questionPage = document.getElementById("questionPage");
 const yesPage = document.getElementById("yesPage");
 const song = document.getElementById("song");
 
+// Move "No" button randomly
 noBtn.addEventListener("touchstart", moveNo);
 noBtn.addEventListener("mouseover", moveNo);
 
@@ -125,25 +121,7 @@ function moveNo() {
   noBtn.style.top = y + "px";
 }
 
-yesBtn.addEventListener("click", () => {
-  questionPage.style.display = "none";
-  yesPage.style.display = "flex";
-  song.play();
-  startHearts();
-  startSlideshow();
-});
-
-const photos = ["photo1.jpg", "photo2.jpg", "photo3.jpg", "photo4.jpg", "photo5.jpg"];
-let index = 0;
-
-function startSlideshow() {
-  yesPage.style.backgroundImage = `url('${photos[index]}')`;
-  setInterval(() => {
-    index = (index + 1) % photos.length;
-    yesPage.style.backgroundImage = `url('${photos[index]}')`;
-  }, 4000);
-}
-
+// Floating hearts
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
@@ -152,15 +130,50 @@ function startHearts() {
     heart.style.left = Math.random() * 100 + "vw";
     heart.style.fontSize = Math.random() * 20 + 15 + "px";
     document.body.appendChild(heart);
-
-    setTimeout(() => {
-      heart.remove();
-    }, 6000);
+    setTimeout(() => heart.remove(), 6000);
   }, 300);
 }
+
+// Slideshow with smooth fade
+const photos = ["photo1.jpg","photo2.jpg","photo3.jpg","photo4.jpg","photo5.jpg"];
+let index = 0;
+
+function startSlideshow() {
+  yesPage.style.backgroundImage = `url('${photos[index]}')`;
+  yesPage.style.opacity = 1;
+
+  setInterval(() => {
+    index = (index + 1) % photos.length;
+    const nextImage = new Image();
+    nextImage.src = photos[index];
+    nextImage.onload = () => {
+      yesPage.style.opacity = 0; // fade out
+      setTimeout(() => {
+        yesPage.style.backgroundImage = `url('${photos[index]}')`;
+        yesPage.style.opacity = 1; // fade in
+      }, 500);
+    }
+  }, 4000);
+}
+
+// Yes button click
+yesBtn.addEventListener("click", () => {
+  questionPage.style.display = "none";
+  yesPage.style.display = "flex";
+
+  // Play song reliably on all devices
+  const playPromise = song.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      // If blocked by browser, retry after 0.5s
+      setTimeout(() => song.play(), 500);
+    });
+  }
+
+  startHearts();
+  startSlideshow();
+});
 </script>
 
 </body>
-
 </html>
-
