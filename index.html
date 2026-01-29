@@ -97,7 +97,6 @@ button {
 
 <div class="yes-page" id="yesPage">
   <h1 id="yesMessage">I knew you'd say yes ;) 💗</h1>
-
   <audio id="song" loop>
     <source src="song.mp3" type="audio/mpeg">
   </audio>
@@ -162,7 +161,7 @@ yesBtn.addEventListener("click", () => {
   questionPage.style.display = "none";
   yesPage.style.display = "flex";
 
-  // Play song reliably on all devices
+  // Play song reliably
   const playPromise = song.play();
   if (playPromise !== undefined) {
     playPromise.catch(() => setTimeout(() => song.play(), 500));
@@ -170,14 +169,14 @@ yesBtn.addEventListener("click", () => {
 
   startHearts();
 
-  // Show "I knew you'd say yes ;)" for 5 seconds before slideshow
+  // Show message for 7 seconds
   yesMessage.style.display = "block";
   yesPage.style.backgroundImage = ""; // plain background
 
   setTimeout(() => {
     yesMessage.style.display = "none"; // hide message
     startSlideshow(); // start slideshow
-  }, 5000);
+  }, 7000); // 7000ms = 7 seconds
 });
 </script>
 
